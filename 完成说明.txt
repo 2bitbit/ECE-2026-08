@@ -1,0 +1,158 @@
+================================================================================
+项目 1 —— 边缘视觉识别与模型量化（Edge Vision Recognition and Model Quantisation）
+完成内容说明
+================================================================================
+
+一、项目目标（一句话）
+-----------------------------------------------------------------
+训练一个小型卷积网络识别热轧带钢表面的 6 类缺陷，导出 ONNX 并做 int8
+静态量化，证明模型能满足树莓派 5 的单件 15 ms 延迟预算。
+
+  6 类缺陷：crazing / inclusion / patches / pitted_surface /
+            rolled-in_scale / scratches
+
+
+二、已完成的全部工作
+-----------------------------------------------------------------
+
+1. 环境搭建
+   - 在项目目录下创建了 .venv 虚拟环境。
+   - 安装了 CPU 版依赖：torch 2.13.0、onnx 1.22.0、onnxruntime 1.28.0、
+     pillow、numpy、matplotlib。
+   - verify.py 现在输出 PASS。
+
+2. 数据集
+   - 使用官方 NEU surface defect database：共 1800 张灰度图（200×200），
+     每类 300 张，6 类完全均衡。
+   - 原始文件为缩写命名的 .bmp（Cr/In/Pa/PS/RS/Sc），已映射为全类名并整理成
+     NEU-DET/<类名>/ 目录结构，加载器同时兼容 .bmp 和 .jpg。
+
+3. starter_p1.py —— 补齐 6 个 TODO（6/6 通过 --check）
+   - 任务 1：像素归一化（除以 255，缩到 0~1）。
+   - 任务 2：训练/测试 80/20 切分。
+   - 任务 3：准确率计算（preds == truth 的均值）。
+   - 任务 4：补全最后一层 nn.Linear(n_features, 6)。
+   - 任务 5：训练步的 loss.backward() 和 opt.step()。
+   - 任务 6：计时（perf_counter 差值 × 1000 转毫秒）。
+   - 额外修复：load_real() 原先会把同一张图重复计数（导致同一张图同时进入
+     训练和测试，造成泄漏），已用集合去重修复。
+
+4. pipeline.py —— 新建的完整交付流水线（一条命令跑通）
+   流程：加载数据 → 按类 60/20/20 分层切分 → 训练 float32 基线
+        → 导出 ONNX 并验证一致 → 单线程 batch=1 测延迟
+        → int8 静态量化 → 每类 precision/recall → 生成验收表与图表。
+
+
+三、核心结果（官方 1800 张，本机实测，Intel CPU / Windows 10）
+-----------------------------------------------------------------
+指标                       float32         int8
+测试准确率                 0.8667          0.8250
+最差类 recall              scratches 0.65  scratches 0.67
+模型大小                   460 kB          124 kB（缩小 3.7 倍）
+延迟中位数 (ms)            0.29            0.74
+延迟 p99 (ms)             0.32            0.79
+15 ms 预算判定            FITS            FITS
+
+
+四、每类 precision / recall
+-----------------------------------------------------------------
+类别               fp32 P    fp32 R    int8 P    int8 R
+crazing            0.908     0.983     0.875     0.933
+inclusion          0.753     0.967     0.705     0.917
+patches            0.946     0.883     0.839     0.867
+pitted_surface     0.907     0.817     0.840     0.700
+rolled-in_scale    0.931     0.900     0.945     0.867
+scratches          0.780     0.650     0.784     0.667
+
+
+五、量化决策（每一项都记录了理由，用于答辩第 5 页）
+-----------------------------------------------------------------
+- 校准集：120 张（每类 20 张），全部取自训练集，不碰测试集。
+- 校准方法：percentile 百分位截断，忽略异常像素，避免拉伸范围浪费精度。
+- 权重：per-channel（逐通道）QInt8，每个卷积核单独一个 scale，精度更高。
+- 激活：QUInt8 非对称，因 ReLU 输出 ≥ 0，无符号范围不浪费负半轴。
+
+
+六、三条「诚实」结论（答辩第 7、8 页素材）
+-----------------------------------------------------------------
+1. int8 把模型缩小约 4 倍，但延迟反而变慢（0.32 → 0.79 ms）。
+   原因：模型太小，量化/反量化开销占主导，且本机 x86 CPU 无 int8 加速
+   指令；两者都远低于 15 ms 预算。
+2. 量化后掉得最多的是 pitted_surface（recall 0.817 → 0.700），因它与
+   patches 视觉相近，量化模糊了细小凹坑细节。
+3. 基线最弱类是 scratches（recall 0.65），因 200×200 缩到 96×96 抹掉了
+   细划痕纹理；量化后它仍是 recall 最低的类。
+
+
+七、交付文件清单
+-----------------------------------------------------------------
+- starter_p1.py          补齐 6 个任务 + 修复重复计数 bug 的脚手架
+- pipeline.py            完整流水线（训练→ONNX→量化→报告），一条命令跑通
+- plot_epochs.py         训练轮数→准确率曲线（epochs_vs_accuracy.png）
+- figures_extra.py       生成 7 张补充演讲图表的脚本
+- README.md              单页说明（功能 / 运行方式 / 核心数据）
+- 完成过程记录.txt       开发全过程复盘（含所有困难与解法）
+- PPT大纲.txt            10 页汇报幻灯片详细大纲（每页文字+配图+讲稿）
+- requirements.txt       精简后的依赖清单（仅本项目所需）
+- verify.py              依赖检查脚本（PASS）
+- results_table.csv/.md  验收表（float32 与 int8 对比）
+- per_class_metrics.csv  每类 precision/recall
+- results_meta.json      设置与硬件信息（可复现）
+- figures/               13 张图（详见「十、图表清单」）
+- model_fp32.onnx        导出的 float32 模型
+- model_int8.onnx        量化后的 int8 模型
+- export_calibration.py  导出校准集脚本（120 张 → calibration/）
+- calibration/           校准集独立文件夹（每类 20 张 + MANIFEST.txt）
+- NEU-DET/               官方数据集（6 个类别子目录，各 300 张）
+
+
+八、如何在新电脑上复现（一条命令跑通）
+-----------------------------------------------------------------
+  前提：安装 Python 3.10+（Windows 勾选 Add Python to PATH），并把整个
+        项目文件夹（含 NEU-DET/ 数据集）拷贝到新电脑，不要拷贝 .venv。
+
+  cd Project_1_CQL
+  python -m venv .venv
+  .venv\Scripts\activate                                    （Windows）
+  pip install torch --index-url https://download.pytorch.org/whl/cpu
+  pip install -r requirements.txt
+  python verify.py                                          （应输出 PASS）
+  python pipeline.py                                        （一条命令，重新生成全部输出）
+
+  说明：测试准确率因固定随机种子（seed=0）可精确复现；延迟取决于新机器
+        的 CPU，会略有不同，但两者都远低于 15 ms 预算，判定仍为 FITS。
+
+
+九、注意事项与待办
+-----------------------------------------------------------------
+注意事项：
+- 延迟是在开发笔记本上测的（单线程、batch=1），这正是简报要求的「仿真」；
+  并非真实树莓派。实际 Pi 5（ARM）上 int8 可能反而更快。
+- 测试准确率是单次固定随机种子（seed=0）的结果；重跑会得到完全一致的数字。
+
+待办（组内可继续，我可协助）：
+- 按 PPT大纲.txt 填充组员姓名、讲稿并排练（10 分钟限时）。
+- report 文档撰写。
+
+
+十、图表清单（13 张，标注对应 PPT 页）
+-----------------------------------------------------------------
+（一）pipeline.py 主流程自动生成（python pipeline.py）：
+  sample_grid.png              6 类缺陷样貌                          → 第 2 页
+  training_curve.png           训练/验证准确率曲线                   → 第 3 页
+  confusion_matrix.png         fp32 vs int8 混淆矩阵                → 第 6 页
+  latency.png                  延迟箱线图 vs 15 ms 预算              → 第 6/10 页
+  per_class_recall.png         每类 recall 柱状图                    → 第 6 页
+
+（二）训练轮数分析（python plot_epochs.py）：
+  epochs_vs_accuracy.png       轮数→准确率（含 20 轮拐点）           → 第 7 页
+
+（三）补充演讲图表（python figures_extra.py）：
+  model_size.png               fp32 460 kB vs int8 124 kB           → 第 5/6 页
+  tradeoff.png                 准确率/体积/延迟三小图                → 第 6/10 页
+  activation_percentile.png    激活分布 + percentile 截断            → 第 5 页
+  calibration_montage.png      校准集样本（120 张中的 24 张）        → 第 5 页
+  architecture.png             模型逐层结构 + 参数量                 → 第 4 页
+  confusable_pairs.png         易混淆类样本对比                      → 第 8 页
+  pipeline_flow.png            端到端链路概览                        → 第 4 页
+================================================================================
