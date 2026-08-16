@@ -1,0 +1,9 @@
+# calibration set exported by export_calibration.py
+# total 120 images, 20/class, train split only (no test/val leakage)
+# class,count
+crazing,20
+inclusion,20
+patches,20
+pitted_surface,20
+rolled-in_scale,20
+scratches,20
