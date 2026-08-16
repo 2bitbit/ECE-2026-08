@@ -1,0 +1,14 @@
+.venv/
+
+# === Python 编译与测试缓存 ===
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# === Office 临时锁文件 (防 Word 打开时产生 ~$ 开头文件) ===
+~$*.docx
+~$*.pptx
+~$*.xlsx
