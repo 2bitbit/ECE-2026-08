@@ -1,0 +1,27 @@
+{
+  "synthetic": false,
+  "params": 115398,
+  "calib_per_class": 20,
+  "warmup": 30,
+  "runs": 100,
+  "hardware": {
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "cpu": "x86_64"
+  },
+  "figures": [
+    "activation_percentile.png",
+    "architecture.png",
+    "calibration_montage.png",
+    "confusable_pairs.png",
+    "confusion_matrix.png",
+    "epochs_vs_accuracy.png",
+    "latency.png",
+    "model_size.png",
+    "per_class_recall.png",
+    "pipeline_flow.png",
+    "sample_grid.png",
+    "tradeoff.png",
+    "training_curve.png"
+  ]
+}
