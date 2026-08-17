@@ -92,6 +92,7 @@ scratches          0.780     0.650     0.784     0.667
 - plot_epochs.py         训练轮数→准确率曲线（epochs_vs_accuracy.png）
 - figures_extra.py       生成 7 张补充演讲图表的脚本
 - compare_per_channel.py per-channel vs per-tensor 量化 A/B 实测脚本（并输出 figures/perchannel_ab.png）
+- fig_capacity_ab.py     加宽 240k vs 窄 115k 容量 A/B 实测脚本（并输出 figures/capacity_ab.png）
 - README.md              单页说明（功能 / 运行方式 / 核心数据）
 - 完成过程记录.txt       开发全过程复盘（含所有困难与解法）
 - PPT大纲.txt            10 页汇报幻灯片详细大纲（每页文字+配图+讲稿）
@@ -137,7 +138,7 @@ scratches          0.780     0.650     0.784     0.667
 - report 文档撰写。
 
 
-十、图表清单（14 张，标注对应 PPT 页）
+十、图表清单（15 张，标注对应 PPT 页）
 -----------------------------------------------------------------
 （一）pipeline.py 主流程自动生成（python pipeline.py）：
   sample_grid.png              6 类缺陷样貌                          → 第 2 页
@@ -147,7 +148,7 @@ scratches          0.780     0.650     0.784     0.667
   per_class_recall.png         每类 recall 柱状图                    → 第 6 页
 
 （二）训练轮数分析（python plot_epochs.py）：
-  epochs_vs_accuracy.png       轮数→准确率（含 20 轮拐点）           → 第 7 页
+  epochs_vs_accuracy.png       轮数→准确率（20 轮为收益递减操作点，无过拟合拐点）  → 第 7 页
 
 （三）补充演讲图表（python figures_extra.py）：
   model_size.png               fp32 460 kB vs int8 124 kB           → 第 5/6 页
@@ -160,4 +161,7 @@ scratches          0.780     0.650     0.784     0.667
 
 （四）量化 A/B 对照（python compare_per_channel.py）：
   perchannel_ab.png             per-channel vs per-tensor 精度对照（含 float32 基线） → 第 5 页
+
+（五）容量 A/B 对照（python fig_capacity_ab.py）：
+  capacity_ab.png               加宽 240k vs 窄 115k 三小图（准确率/延迟/体积） → 第 7 页
 ================================================================================

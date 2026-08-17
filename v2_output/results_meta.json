@@ -1,0 +1,19 @@
+{
+  "synthetic": false,
+  "params": 240006,
+  "calib_per_class": 20,
+  "warmup": 30,
+  "runs": 100,
+  "hardware": {
+    "os": "Windows-10-10.0.19045-SP0",
+    "machine": "AMD64",
+    "cpu": "Intel64 Family 6 Model 165 Stepping 2, GenuineIntel"
+  },
+  "figures": [
+    "confusion_matrix.png",
+    "latency.png",
+    "per_class_recall.png",
+    "sample_grid.png",
+    "training_curve.png"
+  ]
+}
