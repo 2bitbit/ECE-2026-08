@@ -65,11 +65,12 @@ rolled-in_scale    0.931     0.900     0.945     0.867
 scratches          0.780     0.650     0.784     0.667
 
 
-五、量化决策（每一项都记录了理由，用于答辩第 5 页）
+五、量化决策（每一项都记录了理由，用于答辩第 5 页；per-channel/per-tensor
+   对照即简报「chosen with a reason, not a default」评分项）
 -----------------------------------------------------------------
 - 校准集：120 张（每类 20 张），全部取自训练集，不碰测试集。
 - 校准方法：percentile 百分位截断，忽略异常像素，避免拉伸范围浪费精度。
-- 权重：per-channel（逐通道）QInt8，每个卷积核单独一个 scale。实测 per-tensor 对照：per-channel 0.8250 vs per-tensor 0.8306，仅差 2 张测试图（噪声量级），说明「per-channel 精度更高」的假设在这个 11.5 万参数小模型上并未显现，两者可互换；保留 per-channel 作为常规选择（见 compare_per_channel.py）。
+- 权重：per-channel（逐通道）QInt8，每个卷积核单独一个 scale。实测 per-tensor 对照：per-channel 0.8250 vs per-tensor 0.8306，仅差 2 张测试图（噪声量级），说明「per-channel 精度更高」的假设在这个 11.5 万参数小模型上并未显现，两者可互换；保留 per-channel 作为常规选择（见 compare_per_channel.py，配图 figures/perchannel_ab.png）。
 - 激活：QUInt8 非对称，因 ReLU 输出 ≥ 0，无符号范围不浪费负半轴。
 
 
@@ -90,7 +91,7 @@ scratches          0.780     0.650     0.784     0.667
 - pipeline.py            完整流水线（训练→ONNX→量化→报告），一条命令跑通
 - plot_epochs.py         训练轮数→准确率曲线（epochs_vs_accuracy.png）
 - figures_extra.py       生成 7 张补充演讲图表的脚本
-- compare_per_channel.py per-channel vs per-tensor 量化 A/B 实测脚本
+- compare_per_channel.py per-channel vs per-tensor 量化 A/B 实测脚本（并输出 figures/perchannel_ab.png）
 - README.md              单页说明（功能 / 运行方式 / 核心数据）
 - 完成过程记录.txt       开发全过程复盘（含所有困难与解法）
 - PPT大纲.txt            10 页汇报幻灯片详细大纲（每页文字+配图+讲稿）
@@ -136,7 +137,7 @@ scratches          0.780     0.650     0.784     0.667
 - report 文档撰写。
 
 
-十、图表清单（13 张，标注对应 PPT 页）
+十、图表清单（14 张，标注对应 PPT 页）
 -----------------------------------------------------------------
 （一）pipeline.py 主流程自动生成（python pipeline.py）：
   sample_grid.png              6 类缺陷样貌                          → 第 2 页
@@ -156,4 +157,7 @@ scratches          0.780     0.650     0.784     0.667
   architecture.png             模型逐层结构 + 参数量                 → 第 4 页
   confusable_pairs.png         易混淆类样本对比                      → 第 8 页
   pipeline_flow.png            端到端链路概览                        → 第 4 页
+
+（四）量化 A/B 对照（python compare_per_channel.py）：
+  perchannel_ab.png             per-channel vs per-tensor 精度对照（含 float32 基线） → 第 5 页
 ================================================================================
