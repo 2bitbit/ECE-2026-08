@@ -45,8 +45,8 @@ synthetic images and flags the results as such.
 | test accuracy | 0.8667 | 0.8250 |
 | worst class (recall) | scratches (0.650) | scratches (0.667) |
 | model size | 460 kB | 124 kB — **3.7× smaller** |
-| latency median (ms) | 0.29 | 0.74 |
-| latency p99 (ms) | 0.32 | 0.79 |
+| latency median (ms) | 0.29 | 0.72 |
+| latency p99 (ms) | 0.33 | 1.14 |
 | **verdict vs 15 ms** | **FITS** | **FITS** |
 
 Latency is measured on the development laptop (single thread, batch of one), which is
@@ -58,13 +58,14 @@ the simulation the brief specifies; hardware details are recorded in `results_me
 |---|---|---|
 | calibration set | 120 images, 20/class, **train only** | spans every class and brightness range; never touches test |
 | calibration method | **percentile** clipping | ignores outlier pixels that would stretch the range and waste precision |
-| weights | **per-channel** QInt8 | each filter gets its own scale → keeps more accuracy than per-tensor |
+| weights | **per-channel** QInt8 | A/B vs per-tensor: 0.8250 vs 0.8306 (2-image, within-noise gap) — the theoretical edge does not materialise, so the two are interchangeable |
 | activations | **QUInt8** asymmetric | ReLU outputs are ≥ 0, so an unsigned range wastes nothing below zero |
 
 ## Files
 
 - `starter_p1.py` — the provided scaffold, six tasks completed.
 - `pipeline.py` — the full experiment (train → ONNX → benchmark → quantise → report).
+- `compare_per_channel.py` — per-channel vs per-tensor A/B measurement.
 - `results_table.csv` / `results_table.md` — the acceptance table.
 - `per_class_metrics.csv` — per-class precision/recall for both models.
 - `results_meta.json` — settings + hardware, so the numbers are reproducible.

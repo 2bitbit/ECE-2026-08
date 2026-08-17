@@ -5,9 +5,9 @@
   "warmup": 30,
   "runs": 100,
   "hardware": {
-    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
-    "machine": "x86_64",
-    "cpu": "x86_64"
+    "os": "Windows-10-10.0.19045-SP0",
+    "machine": "AMD64",
+    "cpu": "Intel64 Family 6 Model 165 Stepping 2, GenuineIntel"
   },
   "figures": [
     "activation_percentile.png",

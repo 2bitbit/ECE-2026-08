@@ -14,6 +14,7 @@ Run:  python figures_extra.py
 """
 
 import csv
+from pathlib import Path
 
 import matplotlib
 
@@ -85,12 +86,17 @@ def fig_tradeoff(rows):
             ax.set_title(drop, color=INK2, fontsize=11)
         ax.set_ylabel(ylab, fontsize=9)
         if budget is not None:
-            ax.axhline(budget, color=CAT[5], lw=1.2, ls="--")
-            ax.text(0.5, budget, " 15 ms budget", va="bottom", fontsize=8, color=CAT[5])
+            # Bars show ~0.3-0.8 ms vs a 15 ms budget; a linear bar axis would
+            # clip the budget line off the top, so annotate instead of drawing.
+            ax.set_ylim(0, max(vals) * 1.7)
             ax.set_title("both FITS", color=INK2, fontsize=11)
+            ax.text(0.5, max(vals) * 1.5, "15 ms budget off-scale (both FITS)",
+                    ha="center", va="top", fontsize=8, color=CAT[5])
     axes[0].set_ylim(0, 1)
-    fig.suptitle("The quantisation trade-off", color=INK, y=1.02)
-    fig.tight_layout()
+    # Reserve the top band for the suptitle: y=1.02 + tight_layout() clips the
+    # title against the figure edge, so pull it down and leave room via rect.
+    fig.suptitle("The quantisation trade-off", color=INK, y=0.97)
+    fig.tight_layout(rect=[0, 0, 1, 0.92])
     fig.savefig(FIG / "tradeoff.png", dpi=150)
     plt.close(fig)
 
@@ -165,7 +171,7 @@ def fig_calibration_montage(n=4):
     root = HERE / "calibration"
     fig, axes = plt.subplots(6, n, figsize=(n * 1.3, 6 * 1.1))
     for ci, c in enumerate(pipeline.CLASSES):
-        files = sorted((root / c).glob("*.bmp"))[:n]
+        files = pipeline.image_files(root / c)[:n]
         for j, f in enumerate(files):
             ax = axes[ci, j]
             ax.imshow(pipeline.task1_to_array(f), cmap="gray", vmin=0, vmax=1)
@@ -173,8 +179,8 @@ def fig_calibration_montage(n=4):
             if j == 0:
                 ax.set_ylabel(c.replace("_", " "), fontsize=8, color=INK2)
     fig.suptitle(f"Calibration set — {n} of 20 shown per class (120 total, train only)",
-                 color=INK, y=0.99)
-    fig.tight_layout()
+                 color=INK, y=0.97)
+    fig.tight_layout(rect=[0, 0, 1, 0.92])
     fig.savefig(FIG / "calibration_montage.png", dpi=150)
     plt.close(fig)
 
@@ -226,7 +232,7 @@ def fig_confusable_pairs():
     n = 3
     fig, axes = plt.subplots(3, n, figsize=(n * 1.5, 5.6))
     for r, (cname, tag) in enumerate(groups):
-        files = sorted((HERE / "NEU-DET" / cname).glob("*.bmp"))[:n]
+        files = pipeline.image_files(Path(pipeline.ROOT) / cname)[:n]
         for j, f in enumerate(files):
             ax = axes[r, j]
             ax.imshow(pipeline.task1_to_array(f), cmap="gray", vmin=0, vmax=1)
@@ -234,8 +240,8 @@ def fig_confusable_pairs():
             if j == 0:
                 ax.set_ylabel(f"{cname.replace('_', ' ')}\n({tag})", fontsize=8, color=INK2)
     fig.suptitle("Why these classes are hard: similar texture / thin detail",
-                 color=INK, y=0.99)
-    fig.tight_layout()
+                 color=INK, y=0.97)
+    fig.tight_layout(rect=[0, 0, 1, 0.92])
     fig.savefig(FIG / "confusable_pairs.png", dpi=150)
     plt.close(fig)
 

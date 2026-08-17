@@ -12,3 +12,7 @@ __pycache__/
 ~$*.docx
 ~$*.pptx
 ~$*.xlsx
+
+# === 本地快照与个人待办（不进仓库）===
+*.rar
+todo.txt

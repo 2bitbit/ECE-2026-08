@@ -24,9 +24,10 @@ Quantisation decisions (and why):
                        brightness/texture range, small enough to stay fast.
   * calibration      : percentile clipping, which ignores outlier pixels that
                        would otherwise stretch the range and lose precision.
-  * weights          : per-channel QInt8 (symmetric). Per-channel keeps more
-                       accuracy than a single per-tensor scale because each
-                       convolution filter gets its own range.
+  * weights          : per-channel QInt8 (symmetric). A/B-measured against
+                       per-tensor: 0.8250 vs 0.8306 (a 2-image, within-noise
+                       gap), so the two are interchangeable; we keep per-channel
+                       and record the tie (see compare_per_channel.py).
   * activations      : QUInt8 (asymmetric). ReLU outputs are >= 0, so an
                        unsigned, asymmetric range wastes nothing below zero.
 """
@@ -68,6 +69,8 @@ ROOT = os.environ.get("NEU_ROOT") or _find("NEU-DET")
 FIG_DIR = HERE / "figures"
 FIG_DIR.mkdir(exist_ok=True)
 
+IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".bmp"}   # accepted image suffixes (single source of truth)
+
 BUDGET_MS = 15.0          # the Raspberry Pi latency budget from the brief
 CALIB_PER_CLASS = 20      # calibration images per class (120 total)
 WARMUP = 30               # warm-up runs before timing
@@ -79,6 +82,11 @@ RUNS = 100                # timed runs for the latency percentile
 CAT = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300"]
 BLUE_RAMP = ["#cde2fb", "#86b6ef", "#3987e5", "#2a78d6", "#1c5cab", "#104281"]
 INK, INK2, MUTED, GRID, SURF = "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#fcfcfb"
+
+# Short display names for axis labels — the full class names ("pitted_surface",
+# "rolled-in_scale") are too long and get clipped in tight figure layouts, so
+# axis labels use these meaningful abbreviations instead of a raw string slice.
+SHORT = ["crazing", "inclusion", "patches", "pitted", "rolled-in", "scratches"]
 
 rng = np.random.default_rng(SEED)
 
@@ -106,14 +114,21 @@ def _set_style():
 # ---------------------------------------------------------------------------
 # 1. load + split
 # ---------------------------------------------------------------------------
+def image_files(directory):
+    """Sorted image paths in `directory`, matching the loader's extension set
+    (the Kaggle mirror uses .jpg, the official NEU-DET release uses .bmp)."""
+    directory = Path(directory)
+    return sorted(f for f in directory.glob("*")
+                  if f.suffix.lower() in IMAGE_EXTS)
+
+
 def load_dataset(root):
     """One file per image, no double counting. Accepts .jpg/.png/.bmp so it
     works with both the Kaggle mirror and the official NEU-DET (.bmp) release."""
     root = Path(root)
-    exts = {".jpg", ".jpeg", ".png", ".bmp"}
     X, y = [], []
     for ci, c in enumerate(CLASSES):
-        files = sorted(f for f in (root / c).glob("*") if f.suffix.lower() in exts)
+        files = image_files(root / c)
         for f in files:
             X.append(task1_to_array(f)[None])  # shape (1, IMG, IMG)
             y.append(ci)
@@ -198,20 +213,6 @@ def onnx_predict(path, X):
 # ---------------------------------------------------------------------------
 # 4. latency
 # ---------------------------------------------------------------------------
-def benchmark_pt(model, x):
-    torch.set_num_threads(1)
-    model.eval()
-    with torch.no_grad():
-        for _ in range(WARMUP):
-            model(x)
-        t = []
-        for _ in range(RUNS):
-            t0 = time.perf_counter()
-            model(x)
-            t.append((time.perf_counter() - t0) * 1000.0)
-    return _summary(t)
-
-
 def benchmark_onnx(path, x):
     import onnxruntime as ort
     so = ort.SessionOptions()
@@ -319,8 +320,8 @@ def fig_sample_grid(images, labels):
             ax.set_xticks([]); ax.set_yticks([])
             if row == 0:
                 ax.set_title(c.replace("_", " "), fontsize=9, color=INK)
-    fig.suptitle("Two samples per class (resized 96x96)", color=INK, y=0.99)
-    fig.tight_layout()
+    fig.suptitle("Two samples per class (resized 96x96)", color=INK, y=0.97)
+    fig.tight_layout(rect=[0, 0, 1, 0.92])
     fig.savefig(FIG_DIR / "sample_grid.png", dpi=150)
     plt.close(fig)
 
@@ -347,15 +348,15 @@ def fig_confusion(cm_fp32, cm_int8):
         im = ax.imshow(cm, cmap=matplotlib.colors.LinearSegmentedColormap.from_list(
             "blue", BLUE_RAMP), aspect="auto")
         ax.set_xticks(range(6)); ax.set_yticks(range(6))
-        ax.set_xticklabels([c[:6] for c in CLASSES], rotation=40, fontsize=7, color=INK2)
-        ax.set_yticklabels([c.replace("_", " ")[:9] for c in CLASSES], fontsize=7, color=INK2)
+        ax.set_xticklabels(SHORT, rotation=40, fontsize=7, color=INK2)
+        ax.set_yticklabels(SHORT, fontsize=7, color=INK2)
         ax.set_title(title, color=INK)
         for i in range(6):
             for j in range(6):
                 ax.text(j, i, cm[i, j], ha="center", va="center",
                         fontsize=7, color="white" if cm[i, j] > cm.max() / 2 else INK)
-    fig.suptitle("Confusion matrices (rows = truth, cols = prediction)", color=INK)
-    fig.tight_layout()
+    fig.suptitle("Confusion matrices (rows = truth, cols = prediction)", color=INK, y=0.97)
+    fig.tight_layout(rect=[0, 0, 1, 0.92])
     fig.savefig(FIG_DIR / "confusion_matrix.png", dpi=150)
     plt.close(fig)
 
@@ -367,10 +368,15 @@ def fig_latency(times_fp32, times_int8):
                     patch_artist=True, medianprops=dict(color=INK, lw=2))
     for patch, col in zip(bp["boxes"], [CAT[0], CAT[1]]):
         patch.set_facecolor(col); patch.set_alpha(0.45)
+    # Measured latency (~0.3-0.8 ms) is 20-50x below the 15 ms budget, so a
+    # linear axis would clip the budget line off the top. Log scale + an
+    # explicit upper limit keep both the boxes and the budget line visible.
+    ax.set_yscale("log")
+    ax.set_ylim(0.05, BUDGET_MS * 1.5)
     ax.axhline(BUDGET_MS, color=CAT[5], lw=1.5, ls="--")
-    ax.text(1.45, BUDGET_MS, " 15 ms budget", va="bottom", fontsize=8,
+    ax.text(1.45, BUDGET_MS * 1.05, "15 ms budget", va="bottom", fontsize=8,
             color=CAT[5])
-    ax.set_ylabel("latency (ms)")
+    ax.set_ylabel("latency (ms, log scale)")
     ax.set_title("Single-thread, batch-1 latency over %d runs" % RUNS, color=INK)
     fig.tight_layout()
     fig.savefig(FIG_DIR / "latency.png", dpi=150)
@@ -384,8 +390,7 @@ def fig_per_class_recall(rec_fp32, rec_int8):
     ax.bar(x - w / 2, rec_fp32, w, color=CAT[0], label="float32")
     ax.bar(x + w / 2, rec_int8, w, color=CAT[1], label="int8")
     ax.set_xticks(x)
-    ax.set_xticklabels([c.replace("_", " ")[:9] for c in CLASSES],
-                       rotation=25, ha="right", fontsize=8, color=INK2)
+    ax.set_xticklabels(SHORT, rotation=25, ha="right", fontsize=8, color=INK2)
     ax.set_ylabel("recall")
     ax.set_ylim(0, 1)
     ax.legend(frameon=False)
@@ -494,7 +499,6 @@ def main(epochs=20):
           f"agrees with PyTorch on {parity * 100:.2f}% of test predictions\n")
 
     x1 = Xe[:1].numpy().astype(np.float32)
-    lat_pt = benchmark_pt(model, Xe[:1])
     lat_onnx = benchmark_onnx(fp32_onnx, x1)
     print(f"float32 latency  median {lat_onnx['median']:.2f} ms  "
           f"p99 {lat_onnx['p99']:.2f} ms")
@@ -515,8 +519,8 @@ def main(epochs=20):
     quantize_int8(fp32_onnx, int8_onnx, calib_X, per_channel=True,
                   calib_method="percentile")
 
-    acc_i8 = float((onnx_predict(int8_onnx, Xe.numpy()) == ye.numpy()).mean())
     preds_i8 = onnx_predict(int8_onnx, Xe.numpy())
+    acc_i8 = float((preds_i8 == ye.numpy()).mean())
     lat_i8 = benchmark_onnx(int8_onnx, x1)
     print(f"int8 test accuracy    {acc_i8:.4f}   "
           f"latency median {lat_i8['median']:.2f} ms  p99 {lat_i8['p99']:.2f} ms\n")
