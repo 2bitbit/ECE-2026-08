@@ -1,0 +1,33 @@
+{
+  "machine": {
+    "os": "win32",
+    "cpu": "Intel64 Family 6 Model 126 Stepping 5, GenuineIntel"
+  },
+  "config": {
+    "seed": 0,
+    "epochs": 20,
+    "quant": "per-tensor QInt8 + QOperator + ORT_ENABLE_ALL"
+  },
+  "narrow": {
+    "params": 115398,
+    "fp32_acc": 0.8722222222222222,
+    "int8_acc": 0.85,
+    "fp32_median_ms": 0.30995000270195305,
+    "fp32_p99_ms": 0.5406000418588519,
+    "int8_median_ms": 0.6161999772302806,
+    "int8_p99_ms": 0.6780000403523445,
+    "fp32_kB": 460.775390625,
+    "int8_kB": 118.6650390625
+  },
+  "wide": {
+    "params": 240006,
+    "fp32_acc": 0.8917,
+    "int8_acc": 0.8806,
+    "fp32_median_ms": 1.05,
+    "fp32_p99_ms": 1.16,
+    "int8_median_ms": 0.83,
+    "int8_p99_ms": 1.17,
+    "fp32_kB": 947.5,
+    "int8_kB": 240.5
+  }
+}

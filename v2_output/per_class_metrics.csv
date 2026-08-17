@@ -1,7 +1,7 @@
 class,float32_precision,float32_recall,int8_precision,int8_recall
-crazing,0.8871,0.9167,0.8594,0.9167
-inclusion,0.6304,0.9667,0.5918,0.9667
-patches,0.9783,0.7500,1.0000,0.7667
-pitted_surface,0.8333,0.7500,0.8400,0.7000
-rolled-in_scale,0.9333,0.9333,0.9322,0.9167
-scratches,0.8261,0.6333,0.8605,0.6167
+crazing,0.9508,0.9667,0.9500,0.9500
+inclusion,0.7733,0.9667,0.7436,0.9667
+patches,0.9032,0.9333,0.8889,0.9333
+pitted_surface,0.9091,0.8333,0.9038,0.7833
+rolled-in_scale,0.9828,0.9500,0.9828,0.9500
+scratches,0.8571,0.7000,0.8571,0.7000

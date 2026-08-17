@@ -52,6 +52,9 @@
 延迟中位数 (ms)            0.29            0.72
 延迟 p99 (ms)             0.33            1.14
 15 ms 预算判定            FITS            FITS
+注：本表为 A 机（i7-10xxx，Windows，per-channel QInt8）实测口径；
+本机（i5-11xxx）复现为 0.8722/0.8583、延迟 0.31/0.60 ms（见 README 与
+final_results_table.md 三机平均 0.8676/0.8454）。
 
 
 四、每类 precision / recall
