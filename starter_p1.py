@@ -107,6 +107,8 @@ def task2_split(idx):
 # =====================================================================
 def task3_accuracy(preds, truth):
     # TODO: return the fraction correct, as a float between 0 and 1
+    if len(preds) == 0:
+        return 0.0                                   # no predictions -> no score (avoid NaN)
     return float((preds == truth).mean())            # mean of True/False = accuracy
 
 
@@ -203,7 +205,7 @@ def synthetic(n_per_class=120, seed=0):
             elif c == 3: b -= 0.30 * (rng.random((IMG, IMG)) < 0.02)
             elif c == 4: b += 0.14 * np.sin(yy * 0.25 + rng.uniform(0, 6))
             else:        b += 0.26 * (np.abs(yy - xx - rng.integers(-20, 20)) < 2)
-            X.append(b[None].astype(np.float32)); y.append(c)
+            X.append(np.clip(b, 0.0, 1.0)[None].astype(np.float32)); y.append(c)
     return np.stack(X), np.array(y)
 
 

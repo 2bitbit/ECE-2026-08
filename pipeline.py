@@ -448,6 +448,10 @@ def write_results(rows, per_class, meta):
 # main
 # ---------------------------------------------------------------------------
 def main(epochs=20):
+    # reset the module-level rng so repeated in-process runs (e.g. tests,
+    # Jupyter) reproduce the exact same split and calibration set
+    global rng
+    rng = np.random.default_rng(SEED)
     torch.manual_seed(SEED)
     np.random.seed(SEED)
     _set_style()
