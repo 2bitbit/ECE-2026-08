@@ -31,8 +31,12 @@ python verify.py                        # should print PASS
 python pipeline.py                      # regenerates every output below
 ```
 
-Accuracy reproduces exactly (fixed seed); latency is hardware-dependent and will
-differ on a different CPU, but both models stay far under the 15 ms budget.
+With identical dependency versions (see `requirements.txt`) the accuracy
+reproduces exactly (fixed seed). Across torch/onnxruntime versions small numeric
+differences can appear (the DataLoader shuffle and the quantiser both touch
+library internals), so pin the versions for exact reproduction. Latency is
+hardware-dependent and will differ on a different CPU, but both models stay far
+under the 15 ms budget.
 
 The dataset lives in `NEU-DET/<class>/` (one folder per defect class, 300 images
 each, the official NEU-DET release). If it is missing, the script falls back to
@@ -42,11 +46,11 @@ synthetic images and flags the results as such.
 
 | measurement | float32 | int8 |
 |---|---|---|
-| test accuracy | 0.8667 | 0.8250 |
-| worst class (recall) | scratches (0.650) | scratches (0.667) |
-| model size | 460 kB | 124 kB — **3.7× smaller** |
-| latency median (ms) | 0.29 | 0.72 |
-| latency p99 (ms) | 0.33 | 1.14 |
+| test accuracy | 0.8722 | 0.8583 |
+| worst class (recall) | scratches (0.650) | scratches (0.650) |
+| model size | 461 kB | 124 kB — **3.7× smaller** |
+| latency median (ms) | 0.37 | 1.42 |
+| latency p99 (ms) | 0.92 | 2.38 |
 | **verdict vs 15 ms** | **FITS** | **FITS** |
 
 Latency is measured on the development laptop (single thread, batch of one), which is
@@ -58,7 +62,7 @@ the simulation the brief specifies; hardware details are recorded in `results_me
 |---|---|---|
 | calibration set | 120 images, 20/class, **train only** | spans every class and brightness range; never touches test |
 | calibration method | **percentile** clipping | ignores outlier pixels that would stretch the range and waste precision |
-| weights | **per-channel** QInt8 | A/B vs per-tensor: 0.8250 vs 0.8306 (2-image, within-noise gap) — the theoretical edge does not materialise, so the two are interchangeable |
+| weights | **per-channel** QInt8 | A/B vs per-tensor: 0.8583 vs 0.8500 (≈3 images of 360, within-noise gap) — the theoretical edge does not materialise, so the two are interchangeable |
 | activations | **QUInt8** asymmetric | ReLU outputs are ≥ 0, so an unsigned range wastes nothing below zero |
 
 ## Files

@@ -73,8 +73,8 @@ def fig_tradeoff(rows):
 
     fig, axes = plt.subplots(1, 3, figsize=(11, 3.8))
     pairs = [
-        (axes[0], [a32, a8], "accuracy", f"-{a32 - a8:.3f}", None, 0.0),
-        (axes[1], [s32, s8], "size (kB)", f"-{s32 - s8:.0f} kB", None, 0.0),
+        (axes[0], [a32, a8], "accuracy", f"Δ {a32 - a8:+.3f}", None, 0.0),
+        (axes[1], [s32, s8], "size (kB)", f"Δ {s32 - s8:+.0f} kB", None, 0.0),
         (axes[2], [l32, l8], "latency p99 (ms)", None, pipeline.BUDGET_MS, None),
     ]
     for ax, vals, ylab, drop, budget, _ in pairs:

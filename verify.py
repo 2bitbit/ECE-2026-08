@@ -3,7 +3,7 @@ import sys, importlib
 print("python", sys.version.split()[0])
 
 # Pick the line for YOUR project. Delete or comment out the other two.
-needed = ["torch", "onnx", "onnxruntime", "PIL", "numpy", "matplotlib"]              # Project 1, vision
+needed = ["torch", "onnx", "onnxscript", "onnxruntime", "PIL", "numpy", "matplotlib"]              # Project 1, vision
 
 ok = True
 for m in needed:

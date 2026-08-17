@@ -7,7 +7,7 @@
   "hardware": {
     "os": "Windows-10-10.0.19045-SP0",
     "machine": "AMD64",
-    "cpu": "Intel64 Family 6 Model 165 Stepping 2, GenuineIntel"
+    "cpu": "Intel64 Family 6 Model 126 Stepping 5, GenuineIntel"
   },
   "figures": [
     "activation_percentile.png",
@@ -19,6 +19,7 @@
     "latency.png",
     "model_size.png",
     "per_class_recall.png",
+    "perchannel_ab.png",
     "pipeline_flow.png",
     "sample_grid.png",
     "tradeoff.png",

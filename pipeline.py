@@ -444,12 +444,6 @@ def write_results(rows, per_class, meta):
         f.write(f"| verdict vs 15 ms | {rows[0]['verdict']} | {rows[1]['verdict']} |\n")
 
 
-def _report(acc, size_kb, lat, worst, verdict):
-    return {"acc": acc, "size_kb": size_kb, "median_ms": lat["median"],
-            "p99_ms": lat["p99"], "worst_class": worst,
-            "worst_recall": None, "verdict": verdict}
-
-
 # ---------------------------------------------------------------------------
 # main
 # ---------------------------------------------------------------------------

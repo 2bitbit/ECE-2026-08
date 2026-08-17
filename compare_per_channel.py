@@ -28,6 +28,8 @@ def _plot_ab(acc_fp, acc_pc, acc_pt):
     vals = [acc_fp, acc_pc, acc_pt]
     colors = [pipeline.CAT[0], pipeline.CAT[1], pipeline.CAT[2]]
     gap = abs(acc_pc - acc_pt)
+    n_test = 360  # hardcoded to the 60/20/20 split of 1800; see pipeline.split
+    gap_imgs = gap * n_test
 
     fig, ax = plt.subplots(figsize=(6.4, 4.4))
     bars = ax.bar(labels, vals, color=colors, width=0.55)
@@ -39,7 +41,7 @@ def _plot_ab(acc_fp, acc_pc, acc_pt):
     ax.text(-0.28, acc_fp + 0.0015, "float32 baseline",
             va="bottom", fontsize=8, color=pipeline.INK2)
     ax.set_title("per-channel vs per-tensor int8 quantisation (A/B)\n"
-                 f"Δ = {gap:.4f}  (≈2 of 360 test images, within noise)",
+                 f"Δ = {gap:.4f}  (≈{gap_imgs:.1f} of {n_test} test images, within noise)",
                  color=pipeline.INK, fontsize=11)
     ax.set_ylabel("test accuracy")
     ax.set_ylim(min(vals) - 0.035, max(vals) + 0.014)
