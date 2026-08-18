@@ -1,0 +1,3 @@
+model,test_accuracy,worst_class,worst_class_recall,model_size_kB,latency_median_ms,latency_p99_ms,verdict_15ms
+float32 (V5),0.9306,pitted_surface,0.7667,959.7,14.78,16.83,TOO SLOW
+int8 (V5),0.9306,pitted_surface,0.7667,246.9,8.10,10.33,FITS
