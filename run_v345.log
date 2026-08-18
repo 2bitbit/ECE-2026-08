@@ -1,0 +1,135 @@
+===== V3 START =====
+W0818 19:45:54.681000 20892 .venv\Lib\site-packages\torch\onnx\_internal\exporter\_registration.py:107] torchvision is not installed. Skipping torchvision::nms
+W0818 19:45:54.688000 20892 .venv\Lib\site-packages\torch\onnx\_internal\exporter\_registration.py:107] torchvision is not installed. Skipping torchvision::roi_align
+W0818 19:45:54.688000 20892 .venv\Lib\site-packages\torch\onnx\_internal\exporter\_registration.py:107] torchvision is not installed. Skipping torchvision::roi_pool
+W0818 19:45:54.688000 20892 .venv\Lib\site-packages\torch\onnx\_internal\exporter\_registration.py:107] torchvision is not installed. Skipping torchvision::deform_conv2d
+D:\Python312\Lib\copyreg.py:99: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+============================================================
+  PROJECT 1  -  V3 High Accuracy Pipeline (Trading Latency)
+============================================================
+  -> Redirecting all outputs to v3_output/
+loaded 1800 real high-res (128x128) images
+
+model  ->  412,038 parameters (Capacity expanded)
+float32 + 4x TTA test accuracy: 0.8639
+
+[torch.onnx] Obtain model graph for `Sequential([...]` with `torch.export.export(..., strict=False)`...
+[torch.onnx] Obtain model graph for `Sequential([...]` with `torch.export.export(..., strict=False)`... ✅
+[torch.onnx] Run decompositions...
+[torch.onnx] Run decompositions... ✅
+[torch.onnx] Translate the graph into ONNX...
+[torch.onnx] Translate the graph into ONNX... ✅
+[torch.onnx] Optimize the ONNX graph...
+[torch.onnx] Optimize the ONNX graph... ✅
+ONNX export -> model_fp32.onnx, agrees on 100.00% of TTA predictions
+
+float32 TTA latency: median 6.09 ms | p99 7.55 ms
+Collecting tensor data and making histogram ...
+Finding optimal threshold for each tensor using 'percentile' algorithm ...
+Number of tensors : 9
+Number of histogram bins : 2048
+Percentile : (0.0010000000000047748,99.999)
+int8 + 4x TTA test acc: 0.8472 | latency median 6.96 ms | p99 8.26 ms
+
+============================================================
+  V3 ACCEPTANCE TABLE (Trading Latency for Accuracy)
+============================================================
+measurement                  float32        int8
+------------------------------------------------
+test accuracy                 0.8639      0.8472
+worst class recall            0.7333      0.7167
+  (class)                      scratches       scratches
+model size (kB)               1619.0       408.3
+latency p99 (ms)                7.55        8.26
+verdict (15 ms)                 FITS        FITS
+
+All V3 artifacts strictly saved to: D:\desktop\ECE-2026-08\v3_output
+===== V3 EXIT CODE: 0 =====
+===== V4 START =====
+W0818 19:47:56.884000 13264 .venv\Lib\site-packages\torch\onnx\_internal\exporter\_registration.py:107] torchvision is not installed. Skipping torchvision::nms
+W0818 19:47:56.884000 13264 .venv\Lib\site-packages\torch\onnx\_internal\exporter\_registration.py:107] torchvision is not installed. Skipping torchvision::roi_align
+W0818 19:47:56.884000 13264 .venv\Lib\site-packages\torch\onnx\_internal\exporter\_registration.py:107] torchvision is not installed. Skipping torchvision::roi_pool
+W0818 19:47:56.884000 13264 .venv\Lib\site-packages\torch\onnx\_internal\exporter\_registration.py:107] torchvision is not installed. Skipping torchvision::deform_conv2d
+D:\Python312\Lib\copyreg.py:99: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+============================================================
+  PROJECT 1  -  V4 Academic Optimizations (GAP + Cutout)
+============================================================
+  -> Redirecting all outputs to v4_output/
+loaded 1800 real images
+
+model  ->  60,614 parameters (MASSIVELY REDUCED via GAP)
+float32 V4 test accuracy: 0.8861
+
+[torch.onnx] Obtain model graph for `Sequential([...]` with `torch.export.export(..., strict=False)`...
+[torch.onnx] Obtain model graph for `Sequential([...]` with `torch.export.export(..., strict=False)`... ✅
+[torch.onnx] Run decompositions...
+[torch.onnx] Run decompositions... ✅
+[torch.onnx] Translate the graph into ONNX...
+[torch.onnx] Translate the graph into ONNX... ✅
+[torch.onnx] Optimize the ONNX graph...
+[torch.onnx] Optimize the ONNX graph... ✅
+Collecting tensor data and making histogram ...
+Finding optimal threshold for each tensor using 'percentile' algorithm ...
+Number of tensors : 16
+Number of histogram bins : 2048
+Percentile : (0.0010000000000047748,99.999)
+============================================================
+  V4 ACCEPTANCE TABLE (Academic Optimizations)
+============================================================
+measurement                  float32        int8
+------------------------------------------------
+test accuracy                 0.8861      0.8306
+worst class recall            0.6333      0.4667
+  (class)                 pitted_surface  pitted_surface
+model size (kB)                253.9        69.8
+latency p99 (ms)                0.60        0.89
+verdict (15 ms)                 FITS        FITS
+
+All V4 artifacts strictly saved to: D:\desktop\ECE-2026-08\v4_output
+===== V4 EXIT CODE: 0 =====
+===== V5 START =====
+W0818 19:59:05.677000 21340 .venv\Lib\site-packages\torch\onnx\_internal\exporter\_registration.py:107] torchvision is not installed. Skipping torchvision::nms
+W0818 19:59:05.677000 21340 .venv\Lib\site-packages\torch\onnx\_internal\exporter\_registration.py:107] torchvision is not installed. Skipping torchvision::roi_align
+W0818 19:59:05.677000 21340 .venv\Lib\site-packages\torch\onnx\_internal\exporter\_registration.py:107] torchvision is not installed. Skipping torchvision::roi_pool
+W0818 19:59:05.677000 21340 .venv\Lib\site-packages\torch\onnx\_internal\exporter\_registration.py:107] torchvision is not installed. Skipping torchvision::deform_conv2d
+D:\Python312\Lib\copyreg.py:99: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+============================================================
+  PROJECT 1  -  V5 Ultimate Pipeline (GAP + 128x128 + TTA)
+============================================================
+  -> Redirecting all outputs to v5_output/
+loaded 1800 real high-res (128x128) images
+
+model  ->  241,030 parameters (Wide structure with GAP)
+float32 V5 test accuracy (+ 4x TTA): 0.9278
+
+[torch.onnx] Obtain model graph for `Sequential([...]` with `torch.export.export(..., strict=False)`...
+[torch.onnx] Obtain model graph for `Sequential([...]` with `torch.export.export(..., strict=False)`... ✅
+[torch.onnx] Run decompositions...
+[torch.onnx] Run decompositions... ✅
+[torch.onnx] Translate the graph into ONNX...
+[torch.onnx] Translate the graph into ONNX... ✅
+[torch.onnx] Optimize the ONNX graph...
+[torch.onnx] Optimize the ONNX graph... ✅
+Collecting tensor data and making histogram ...
+Finding optimal threshold for each tensor using 'percentile' algorithm ...
+Number of tensors : 16
+Number of histogram bins : 2048
+Percentile : (0.0010000000000047748,99.999)
+============================================================
+  V5 ACCEPTANCE TABLE (The Ultimate Form)
+============================================================
+measurement                  float32        int8
+------------------------------------------------
+test accuracy                 0.9278      0.9194
+worst class recall            0.7500      0.7667
+  (class)                 pitted_surface  pitted_surface
+model size (kB)                958.7       246.5
+latency p99 (ms)               14.40       12.40
+verdict (15 ms)                 FITS        FITS
+
+All V5 artifacts strictly saved to: D:\desktop\ECE-2026-08\v5_output
+===== V5 EXIT CODE: 0 =====
+===== ALL DONE =====

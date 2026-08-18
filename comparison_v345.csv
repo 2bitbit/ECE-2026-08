@@ -1,0 +1,5 @@
+version,approach,fp32_acc,int8_acc,fp32_size_kB,int8_size_kB,fp32_median_ms,int8_median_ms,fp32_p99_ms,int8_p99_ms,worst_class,fp32_worst_recall,int8_worst_recall,verdict
+baseline,96x96+115k+Flatten,0.8722,0.8583,461,124,0.31,0.65,0.44,1.48,scratches,0.650,0.650,FITS
+V3,128x128+412k+4xTTA,0.8639,0.8472,1619,408,6.09,6.96,7.55,8.26,scratches,0.733,0.717,FITS
+V4,96x96+60k+GAP+Cutout,0.8861,0.8306,254,70,0.58,0.79,0.60,0.89,pitted_surface,0.633,0.467,FITS
+V5,128x128+240k+GAP+TTA,0.9278,0.9194,959,247,13.77,11.26,14.40,12.40,pitted_surface,0.750,0.767,FITS

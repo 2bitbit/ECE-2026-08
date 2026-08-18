@@ -1,0 +1,3 @@
+model,test_accuracy,worst_class,worst_class_recall,model_size_kB,latency_median_ms,latency_p99_ms,verdict_15ms
+float32 (V3),0.8639,scratches,0.7333,1619.0,6.09,7.55,FITS
+int8 (V3),0.8472,scratches,0.7167,408.3,6.96,8.26,FITS
