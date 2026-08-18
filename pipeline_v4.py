@@ -333,6 +333,23 @@ def fig_confusion(cm_fp32, cm_int8):
     fig.savefig(FIG_DIR / "confusion_matrix.png", dpi=150)
     plt.close(fig)
 
+def fig_latency(times_fp32, times_int8):
+    fig, ax = plt.subplots(figsize=(6, 4))
+    data = [times_fp32["all"], times_int8["all"]]
+    bp = ax.boxplot(data, tick_labels=["float32", "int8"], widths=0.45,
+                    patch_artist=True, medianprops=dict(color=INK, lw=2))
+    for patch, col in zip(bp["boxes"], [CAT[0], CAT[1]]):
+        patch.set_facecolor(col); patch.set_alpha(0.45)
+    ax.set_yscale("log")
+    ax.set_ylim(0.05, BUDGET_MS * 1.5)
+    ax.axhline(BUDGET_MS, color=CAT[5], lw=1.5, ls="--")
+    ax.text(1.45, BUDGET_MS * 1.05, "15 ms budget", va="bottom", fontsize=8, color=CAT[5])
+    ax.set_ylabel("latency (ms, log scale)")
+    ax.set_title("V4 Latency over %d runs" % RUNS, color=INK)
+    fig.tight_layout()
+    fig.savefig(FIG_DIR / "latency.png", dpi=150)
+    plt.close(fig)
+
 
 def write_results(rows, per_class, meta):
     main = OUT_DIR / "results_table.csv"
@@ -353,6 +370,17 @@ def write_results(rows, per_class, meta):
         for ci, c in enumerate(CLASSES):
             w.writerow([c, f'{per_class["fp32"][0][ci]:.4f}', f'{per_class["fp32"][1][ci]:.4f}',
                         f'{per_class["int8"][0][ci]:.4f}', f'{per_class["int8"][1][ci]:.4f}'])
+
+    md = OUT_DIR / "results_table.md"
+    with open(md, "w") as f:
+        f.write("| measurement | float32 | int8 |\n|---|---|---|\n")
+        f.write(f"| test accuracy | {rows[0]['acc']:.4f} | {rows[1]['acc']:.4f} |\n")
+        f.write(f"| worst class | {rows[0]['worst_class']} | {rows[1]['worst_class']} |\n")
+        f.write(f"| worst class recall | {rows[0]['worst_recall']:.4f} | {rows[1]['worst_recall']:.4f} |\n")
+        f.write(f"| model size (kB) | {rows[0]['size_kb']:.1f} | {rows[1]['size_kb']:.1f} |\n")
+        f.write(f"| latency median (ms) | {rows[0]['median_ms']:.2f} | {rows[1]['median_ms']:.2f} |\n")
+        f.write(f"| latency p99 (ms) | {rows[0]['p99_ms']:.2f} | {rows[1]['p99_ms']:.2f} |\n")
+        f.write(f"| verdict vs 15 ms | {rows[0]['verdict']} | {rows[1]['verdict']} |\n")
 
 def main(epochs=40): # Increased epochs because Cutout requires longer training
     global rng
@@ -416,6 +444,7 @@ def main(epochs=40): # Increased epochs because Cutout requires longer training
     prec_fp, rec_fp = per_class_metrics(preds_pt, ye.numpy())
     prec_i8, rec_i8 = per_class_metrics(preds_i8, ye.numpy())
     fig_confusion(confusion_matrix(preds_pt, ye.numpy()), confusion_matrix(preds_i8, ye.numpy()))
+    fig_latency(lat_onnx, lat_i8)
 
     def worst(rec):
         i = int(np.argmin(rec))
