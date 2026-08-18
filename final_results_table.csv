@@ -1,14 +1,14 @@
 metric,float32_mean,float32_sd,int8_mean,int8_sd,n_machines
-test_accuracy,0.8695,0.0027,0.8417,0.0166,2
-model_size_kB,460.5500,0.2500,124.0000,0.2000,2
-latency_median_ms,0.3300,0.0400,1.0700,0.3500,2
-latency_p99_ms,0.6250,0.2950,1.7600,0.6200,2
-worst_class_recall,0.6500,0.0000,0.6583,0.0083,2
+test_accuracy,0.8704,0.0026,0.8472,0.0157,3
+model_size_kB,460.5333,0.2055,124.0000,0.1633,3
+latency_median_ms,0.2933,0.0613,0.8600,0.4121,3
+latency_p99_ms,0.4967,0.3016,1.3500,0.7697,3
+worst_class_recall,0.6556,0.0079,0.6611,0.0079,3
 
 class,fp32_precision_mean,fp32_recall_mean,int8_precision_mean,int8_recall_mean
-crazing,0.9077,0.9833,0.8899,0.9416
-inclusion,0.7532,0.9667,0.7291,0.9417
-patches,0.9464,0.8833,0.8762,0.8750
-pitted_surface,0.9160,0.8167,0.8655,0.7583
-rolled-in_scale,0.9322,0.9166,0.9376,0.8750
-scratches,0.7880,0.6500,0.7822,0.6583
+crazing,0.9071,0.9779,0.8949,0.9444
+inclusion,0.7565,0.9668,0.7278,0.9501
+patches,0.9356,0.8832,0.8888,0.8777
+pitted_surface,0.9136,0.8221,0.8733,0.7722
+rolled-in_scale,0.9374,0.9168,0.9464,0.8777
+scratches,0.7973,0.6557,0.7881,0.6612
