@@ -1,28 +1,34 @@
-# Final results (average across 3 machines)
+# Final results (average across 2 machines, new identities only)
+
+> 平均口径：仅统计新身份成员机器（CQL0329 + sera-him），忽略旧身份（ChenQile329）机器数据。
+> 原因：旧身份提交（b89ad93）为 08-16 早期身份 ChenQile329 所产生，按团队要求不纳入最终平均。
 
 | metric | float32 (mean ± sd) | int8 (mean ± sd) |
 |---|---|---|
-| test accuracy | 0.8676 ± 0.0034 | 0.8454 ± 0.0146 |
-| model size (kB) | 460.5667 ± 0.2055 | 124.0333 ± 0.1700 |
-| latency median (ms) | 0.3233 ± 0.0340 | 0.8367 ± 0.4365 |
-| latency p99 (ms) | 0.5400 ± 0.2692 | 1.3200 ± 0.8022 |
-| worst class recall | 0.6500 ± 0.0000 | 0.6500 ± 0.0136 |
+| test accuracy | 0.8695 ± 0.0027 | 0.8417 ± 0.0166 |
+| model size (kB) | 460.5500 ± 0.2500 | 124.0000 ± 0.2000 |
+| latency median (ms) | 0.3300 ± 0.0400 | 1.0700 ± 0.3500 |
+| latency p99 (ms) | 0.6250 ± 0.2950 | 1.7600 ± 0.6200 |
+| worst class recall | 0.6500 ± 0.0000 | 0.6583 ± 0.0083 |
 
 | verdict vs 15 ms | FITS (all machines) | FITS (all machines) |
 
-## Per-class precision/recall (mean across machines)
+## Per-class precision/recall (mean across 2 machines)
 
 | class | fp32 P | fp32 R | int8 P | int8 R |
 |---|---|---|---|---|
-| crazing | 0.9031 | 0.9833 | 0.8949 | 0.9444 |
-| inclusion | 0.7532 | 0.9667 | 0.7219 | 0.9500 |
-| patches | 0.9461 | 0.8778 | 0.8941 | 0.8778 |
-| pitted_surface | 0.9131 | 0.8167 | 0.8733 | 0.7722 |
-| rolled-in_scale | 0.9318 | 0.9111 | 0.9406 | 0.8778 |
-| scratches | 0.7853 | 0.6500 | 0.7853 | 0.6500 |
+| crazing | 0.9077 | 0.9833 | 0.8899 | 0.9416 |
+| inclusion | 0.7532 | 0.9667 | 0.7291 | 0.9417 |
+| patches | 0.9464 | 0.8833 | 0.8762 | 0.8750 |
+| pitted_surface | 0.9160 | 0.8167 | 0.8655 | 0.7583 |
+| rolled-in_scale | 0.9322 | 0.9166 | 0.9376 | 0.8750 |
+| scratches | 0.7880 | 0.6500 | 0.7822 | 0.6583 |
 
-## Machines
+## Machines (included)
 
-- Linux WSL2 x86_64 (b89ad93) (author ChenQile329)
 - Windows 10, Intel i7-10xxx (1eb549e) (author CQL0329)
 - Windows 10, Intel i5-11xxx (36985ca) (author sera-him)
+
+## Machines (excluded)
+
+- Linux WSL2 x86_64 (b89ad93) (author ChenQile329, old identity — excluded per team instruction)
