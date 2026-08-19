@@ -20,7 +20,7 @@ This project follows strict engineering reproducibility standards (using a fixed
 2. **Install Core Dependencies**:
    Since our deployment target is a CPU-only edge device, we recommend installing the CPU version of PyTorch to save space, followed by all project requirements:
    ```bash
-   pip install torch --index-url [https://download.pytorch.org/whl/cpu](https://download.pytorch.org/whl/cpu)
+   pip install torch --index-url https://download.pytorch.org/whl/cpu
    pip install -r requirements.txt
    ```
 
