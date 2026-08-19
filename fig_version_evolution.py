@@ -16,7 +16,7 @@ from pipeline import CAT, INK, INK2, MUTED, FIG_DIR
 NAMES = ["V1\nbaseline", "V2\nwide", "V3\nTTA", "V4\nGAP", "V5\nultimate"]
 FP32 = [0.8704, 0.8583, 0.8709, 0.8834, 0.9287]
 INT8 = [0.8472, 0.8473, 0.8639, 0.8528, 0.9250]
-P99F = [0.29, 1.07, 7.89, 0.69, 15.84]
+P99F = [0.29, 1.07, 7.89, 0.69, 14.40]
 P99I = [0.84, 1.15, 7.50, 1.12, 11.23]
 SIZE = [124.0, 240.4, 408.4, 70.0, 246.7]
 BUDGET = 15.0
@@ -39,14 +39,13 @@ axes[0].text(0.03, 0.955, "V5: +5.9pt fp32 / +7.8pt int8 vs V1", fontsize=8, col
 b1 = axes[1].bar(x - w / 2, P99F, w, color=CAT[0], label="fp32")
 b2 = axes[1].bar(x + w / 2, P99I, w, color=CAT[1], label="int8")
 for b, v in zip(list(b1) + list(b2), P99F + P99I):
-    axes[1].text(b.get_x() + b.get_width() / 2, max(v, 0.4) * 1.25, f"{v:.2f}",
+    axes[1].text(b.get_x() + b.get_width() / 2, v + 0.35, f"{v:.2f}",
                  ha="center", fontsize=8, color=INK)
-axes[1].set_yscale("log")
-axes[1].set_ylim(0.3, 60)
+axes[1].set_ylim(0, 17.5)
 axes[1].axhline(BUDGET, color="red", ls="--", lw=1.5)
-axes[1].text(4.45, BUDGET * 1.08, "15 ms", fontsize=8, color="red", ha="right")
-axes[1].set_ylabel("latency p99 (ms, log)", fontsize=9)
-axes[1].set_title("Latency p99 (int8 only one safe for V5)", color=INK, fontsize=10)
+axes[1].text(4.45, BUDGET + 0.5, "15 ms", fontsize=8, color="red", ha="right")
+axes[1].set_ylabel("latency p99 (ms)", fontsize=9)
+axes[1].set_title("Latency p99 (all below 15 ms budget)", color=INK, fontsize=10)
 
 b1 = axes[2].bar(x, SIZE, w, color=CAT[1])
 for b, v in zip(b1, SIZE):
