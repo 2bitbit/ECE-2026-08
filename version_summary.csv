@@ -1,5 +1,5 @@
 version,params,machines,fp32_acc,int8_acc,int8_drop,size_fp32_kB,size_int8_kB,size_ratio,latency_median_fp32_ms,latency_median_int8_ms,latency_p99_fp32_ms,latency_p99_int8_ms,worst_class,worst_recall_fp32,worst_recall_int8
-V1 baseline,"115,398",CQL0329 + sera-him + destiny (3 机),0.8704,0.8472,0.0232,460.5,124.0,3.7,0.29,0.86,0.50,1.35,scratches,0.6500,0.6500
+V1 baseline,"115,398","CQL0329 + sera-him + destiny (3 机, 延迟 2 机)",0.8704,0.8472,0.0232,460.5,124.0,3.7,0.26,0.58,0.29,0.84,scratches,0.6500,0.6500
 V2 wide,"240,006",CQL0329 + sera-him (2 机),0.8583,0.8473,0.0111,947.2,240.4,3.9,0.99,0.94,1.07,1.15,scratches,0.6667,0.6667
 V3 TTA,"412,038",CQL0329 + sera-him (2 机),0.8709,0.8639,0.0070,1619.2,408.4,4.0,6.79,6.45,7.89,7.50,scratches,0.7333,0.7167
 V4 GAP,"60,614",CQL0329 + sera-him (2 机),0.8834,0.8528,0.0306,254.4,70.0,3.6,0.60,0.93,0.69,1.12,pitted_surface,0.6333,0.6333
